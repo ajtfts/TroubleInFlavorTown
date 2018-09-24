@@ -8,6 +8,20 @@ import javax.imageio.ImageIO;
 
 public class ResourceLoader {
 	
+	private static BufferedImage[] images;
+	
+	public static BufferedImage[] load() {
+		try {
+			images = new BufferedImage[] {
+					ImageIO.read(new File("default.png"))
+			};
+		} catch (IOException e) {
+			System.out.println("Failed to load resources.");
+			e.printStackTrace();
+		}
+		return images;
+	}
+	
 	public static BufferedImage load(String fname) {
 		try {
 			return ImageIO.read(new File(fname));

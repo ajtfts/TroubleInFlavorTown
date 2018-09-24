@@ -46,7 +46,7 @@ public class GameObject {
 	}
 	
 	// get/set object image
-	public int getImage() {
+	public int getImageID() {
 		return imgID;
 	}
 	
