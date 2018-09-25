@@ -1,6 +1,6 @@
 package towerDefense;
 
-import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -15,31 +15,24 @@ public class GameWindow {
 	private JFrame frame;
 	private JPanel panel;
 	
-	ArrayList<GameObject> renderList = new ArrayList<GameObject>();
+	private ArrayList<GameObject> renderList = new ArrayList<GameObject>();
 	
 	public GameWindow() {
 		
 		frame = new JFrame("Trouble in FlavorTown");
-		frame.setSize(600, 600);
 		frame.setResizable(false);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
+
 		
 		resArray = ResourceLoader.load();
-		
-		Tower t1 = new Tower(50.0f, 50.0f, 64, 64);
-		Tower t2 = new Tower(100.0f, 100.0f, 64, 64);
-		renderList.add(t1);
-		renderList.add(t2);
-		
+	
 		panel = new JPanel() {
 
 			private static final long serialVersionUID = 681094876978449737L;
 			
 			protected void paintComponent(Graphics g) {
 				super.paintComponent(g);
-				g.setColor(Color.BLACK);
-				g.drawRect(0, 0, 100, 100);
 				
 				for (int i = 0; i < renderList.size(); i++) {
 					GameObject cur = renderList.get(i);
@@ -50,8 +43,19 @@ public class GameWindow {
 			}
 		};
 		
+		panel.setPreferredSize(new Dimension(200, 200));
+		
 		frame.add(panel);
+		frame.pack();
 		
 		
+	}
+	
+	public JPanel getMainPanel() {
+		return this.panel;
+	}
+	
+	public ArrayList<GameObject> getRenderList() {
+		return this.renderList;
 	}
 }

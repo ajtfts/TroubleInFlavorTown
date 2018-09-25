@@ -13,7 +13,8 @@ public class ResourceLoader {
 	public static BufferedImage[] load() {
 		try {
 			images = new BufferedImage[] {
-					ImageIO.read(new File("default.png"))
+					ImageIO.read(new File("default.png")),
+					ImageIO.read(new File("tile_ground.png"))
 			};
 		} catch (IOException e) {
 			System.out.println("Failed to load resources.");

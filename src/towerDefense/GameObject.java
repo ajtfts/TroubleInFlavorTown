@@ -1,5 +1,7 @@
 package towerDefense;
 
+import java.util.ArrayList;
+
 public class GameObject {
 	
 	private float x, y;
@@ -7,12 +9,16 @@ public class GameObject {
 	private int imgID;
 	private int imgWidth, imgHeight;
 	
-	public GameObject(float x, float y, int imgID, int w, int h) {
+	private ArrayList<GameObject> renderList;
+	
+	public GameObject(float x, float y, int imgID, int w, int h, ArrayList<GameObject> r) {
 		this.x = x;
 		this.y = y;
 		this.imgID = imgID;
 		this.imgWidth = w;
 		this.imgHeight = h;
+		this.renderList = r;
+		this.renderList.add(this);
 	}
 	
 	// get/set object position
@@ -50,7 +56,7 @@ public class GameObject {
 		return imgID;
 	}
 	
-	public void setImage(int imgID) {
+	public void setImageID(int imgID) {
 		this.imgID = imgID;
 	}
 

@@ -1,11 +1,13 @@
 package towerDefense;
 
+import java.util.ArrayList;
+
 public class MovingObject extends GameObject {
 	
 	private float vx, vy;
 	
-	public MovingObject(float x, float y, int imgID, int imgWidth, int imgHeight) {
-		super(x, y, imgID, imgWidth, imgHeight);
+	public MovingObject(float x, float y, int imgID, int imgWidth, int imgHeight, ArrayList<GameObject> r) {
+		super(x, y, imgID, imgWidth, imgHeight, r);
 	}
 	
 	public float[] getVelocity() {
