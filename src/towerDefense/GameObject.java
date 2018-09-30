@@ -21,6 +21,11 @@ public class GameObject {
 		this.renderList.add(this);
 	}
 	
+	public void move(float xSpeed, float ySpeed, double weight) {
+		this.x = (float) (this.x + xSpeed * weight);
+		this.y = (float) (this.y + ySpeed * weight);
+	}
+	
 	// get/set object position
 	public float[] getPos() {
 		return new float[] {this.x, this.y};

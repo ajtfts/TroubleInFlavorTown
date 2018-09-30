@@ -43,7 +43,6 @@ public class GameWindow {
 				} else {
 					tileInfo += line;
 				}
-				System.out.println(tileInfo);
 				num++;
 			}
 			sc.close();
