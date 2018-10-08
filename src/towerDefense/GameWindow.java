@@ -3,6 +3,8 @@ package towerDefense;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -27,6 +29,7 @@ public class GameWindow {
 	private BufferedImage[] resArray; // array of all images
 	
 	private int windowWidth = 1200, windowHeight = 675;
+	private int mainPanelWidth = (int) (windowWidth * (5.0/6.0));
 	
 	private JFrame frame;
 	private JPanel mainPanel, menuPanel;
@@ -59,6 +62,11 @@ public class GameWindow {
 				num++;
 			}
 			sc.close();
+		
+			// initialize xOffset and yOffset so as to center map
+			xOffset = (mainPanelWidth / 2) - TILE_SIZE * mapWidth / 2;
+			yOffset = (windowHeight / 2) - TILE_SIZE * mapHeight / 2;
+		
 		} catch (FileNotFoundException e) {
 			System.out.println("Failed to find map file.");
 			e.printStackTrace();
@@ -86,6 +94,7 @@ public class GameWindow {
 		resArray = ResourceLoader.load();
 	
 		// create mainPanel object
+		
 		mainPanel = new JPanel() {
 
 			private static final long serialVersionUID = 681094876978449737L;
@@ -100,16 +109,45 @@ public class GameWindow {
 					GameObject cur = renderList.get(i);
 					float[] pos = cur.getPos();
 					int[] dims = cur.getImgDims();
-					g.drawImage(resArray[cur.getImageID()], (int) pos[0]+xOffset, (int) pos[1]+yOffset, dims[0], dims[1], null);
+					g.drawImage(
+							resArray[cur.getImageID()],
+							(int) (pos[0]+xOffset) - (dims[0] / 2), (int) (pos[1]+yOffset) - (dims[1] / 2),
+							dims[0], dims[1], null);
 				}
 			}
 		};
 		
-		mainPanel.setPreferredSize(new Dimension((int) (windowWidth * (5.0/6.0)), windowHeight));
+		mainPanel.setPreferredSize(new Dimension(mainPanelWidth, windowHeight));
 		mainPanel.setBackground(Color.DARK_GRAY);
 		frame.add(mainPanel);
 		
-		menuPanel = new JPanel() {
+		// begin creating all the components we will add to menuPanel
+		
+		
+		// button to add a tower to the map
+		JButton addTower = new JButton("Add Tower");
+		
+		addTower.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				towerSelected = true;
+			}
+		});
+		
+		// another button to add a different tower
+		JButton addOtherTower = new JButton("Add Tower");
+		
+		addOtherTower.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				towerSelected = true;
+			}
+		});
+		
+		//button to start the round
+		JButton startRound = new JButton("Start");
+		
+		// create menuPanel
+		
+		menuPanel = new JPanel(new GridBagLayout()) {
 
 			private static final long serialVersionUID = 1L;			
 			
@@ -119,23 +157,26 @@ public class GameWindow {
 			
 		};
 		
-		menuPanel.setPreferredSize(new Dimension((int) (windowWidth * (1.0/6.0)), windowHeight));
+		menuPanel.setPreferredSize(new Dimension((int) (windowWidth * (1.0/6.0)), windowHeight)); // set menuPanel size
 		
-		JButton addTower = new JButton("Add Tower");
+		// setup GridBag Constraints for menuPanel
+		GridBagConstraints c = new GridBagConstraints();
 		
-		addTower.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				towerSelected = true;
-			}
-		});
+		c.gridx = 0;
+		c.gridy = 0;
+		c.fill = GridBagConstraints.BOTH;
+		menuPanel.add(addTower, c);
 		
-		JButton startRound = new JButton("Start");
-		menuPanel.add(addTower);
-		menuPanel.add(startRound);
+		c.gridx = 1;
+		c.gridy = 0;
+		menuPanel.add(addOtherTower, c);
+		
+		c.gridx = 0;
+		c.gridy = 1;
+		c.gridwidth = 2;
+		menuPanel.add(startRound, c);
 		
 		frame.add(menuPanel);
-		
-		
 		
 		frame.pack();
 		
@@ -143,8 +184,7 @@ public class GameWindow {
 		mListener = new MouseListener() {
 			public void mouseClicked(MouseEvent e) {
 				if (towerSelected) {
-					System.out.printf("%d, %d\n", e.getX(), e.getY());
-					new Tower(e.getX()-xOffset, e.getY()-yOffset, 15, 15, renderList);
+					new Tower(e.getX()-xOffset, e.getY()-yOffset, renderList);
 					towerSelected = false;
 				}
 			}

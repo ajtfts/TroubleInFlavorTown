@@ -13,8 +13,6 @@ public class RunGame {
 	private static final long OPTIMAL_TIME = 1000000000 / TARGET_FPS; // convert target frames-per-second to target time between frames in nanoseconds
 	private static boolean running = true;
 	
-	private static Tower t1, t2;
-	
 	public static void main(String[] args) {
 		window = new GameWindow();
 		r = window.getRenderList();
