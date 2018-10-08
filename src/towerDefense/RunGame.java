@@ -22,35 +22,30 @@ public class RunGame {
 		// setup the initial state of the game
 		window.loadMap("maptest.txt");
 		
-		t1 = new Tower(0.0f, 0.0f, 32, 32, r);
-		t2 = new Tower(0.0f, 100.0f, 32, 32, r);
-		
 		gameLoop();
 	}
 	
 	private static void updateLogic(long deltaT) {
 		double w = deltaT/((double) OPTIMAL_TIME);
-		t2.move(1, 0, w);
-		t1.move(0, 1, w);
 	}
 	
 	private static void gameLoop() {
 		
 		boolean first = true;
 		
+		long now, deltaT;
 		long lastFrame = System.nanoTime();
 		
 		int difX = 0, difY = 0, mapX = 0, mapY = 0, initXOffset = 0, initYOffset = 0;
 		
 		while (running) {
-			long now = System.nanoTime();
-			long deltaT = now - lastFrame; 
+			now = System.nanoTime();
+			deltaT = now - lastFrame; 
 			
 			lastFrame = now;
 			
 			//update game state
 			updateLogic(deltaT);
-			
 			
 			// change map view by dragging mouse
 			if (window.getMouseState()) {
@@ -84,3 +79,6 @@ public class RunGame {
 	}
 	
 }
+
+
+
