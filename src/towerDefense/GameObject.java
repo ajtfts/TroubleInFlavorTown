@@ -11,7 +11,7 @@ public class GameObject {
 	
 	private ArrayList<GameObject> renderList;
 	
-	public GameObject(float x, float y, int imgID, int w, int h, ArrayList<GameObject> r) {
+	public GameObject(float x, float y, int w, int h, int imgID, ArrayList<GameObject> r) {
 		this.x = x;
 		this.y = y;
 		this.imgID = imgID;

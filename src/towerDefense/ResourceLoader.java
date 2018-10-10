@@ -15,7 +15,9 @@ public class ResourceLoader {
 			images = new BufferedImage[] {
 					ImageIO.read(new File("default.png")),
 					ImageIO.read(new File("tile_ground.png")),
-					ImageIO.read(new File("tile_path.png"))
+					ImageIO.read(new File("tile_path.png")),
+					ImageIO.read(new File("TomTower.png")),
+					ImageIO.read(new File("PattyTower.png"))
 			};
 		} catch (IOException e) {
 			System.out.println("Failed to load resources.");

@@ -35,7 +35,8 @@ public class GameWindow {
 	private JPanel mainPanel, menuPanel;
 	
 	private MouseListener mListener;
-	private boolean mouseState = false, towerSelected = false;
+	private boolean mouseState = false;
+	private int towerSelected = -1;
 	
 	private ArrayList<GameObject> renderList = new ArrayList<GameObject>();
 	private int xOffset = 0, yOffset = 0;
@@ -44,7 +45,7 @@ public class GameWindow {
 	private String tileInfo = "";
 	private Map<Character, Integer> tileDict = new HashMap<Character, Integer>();
 	
-	public void loadMap(String fname) {
+	public void loadMap(String fname) { // takes text file, converts it into a string containing tile information
 		File f = new File(fname);
 		try {
 			Scanner sc = new Scanner(f);
@@ -76,7 +77,10 @@ public class GameWindow {
 	private void drawMap(Graphics g) {
 		for (int i = 0; i < mapHeight; i++) {
 			for (int j = 0; j < mapWidth; j++) {
-				g.drawImage(resArray[tileDict.get(tileInfo.charAt(i*mapWidth+j))], j*TILE_SIZE+xOffset, i*TILE_SIZE+yOffset, TILE_SIZE, TILE_SIZE, null);
+				g.drawImage(
+						resArray[tileDict.get(tileInfo.charAt(i*mapWidth+j))], // grab the correct image for the current tile from resArray
+						j*TILE_SIZE+xOffset, i*TILE_SIZE+yOffset,
+						TILE_SIZE, TILE_SIZE, null);
 			}
 		}
 	}
@@ -94,7 +98,6 @@ public class GameWindow {
 		resArray = ResourceLoader.load();
 	
 		// create mainPanel object
-		
 		mainPanel = new JPanel() {
 
 			private static final long serialVersionUID = 681094876978449737L;
@@ -123,22 +126,21 @@ public class GameWindow {
 		
 		// begin creating all the components we will add to menuPanel
 		
-		
 		// button to add a tower to the map
-		JButton addTower = new JButton("Add Tower");
+		JButton addTomTower = new JButton("Tom Tosser");
 		
-		addTower.addActionListener(new ActionListener() {
+		addTomTower.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				towerSelected = true;
+				towerSelected = 0;
 			}
 		});
 		
 		// another button to add a different tower
-		JButton addOtherTower = new JButton("Add Tower");
+		JButton addPattyTower = new JButton("Patty Tosser");
 		
-		addOtherTower.addActionListener(new ActionListener() {
+		addPattyTower.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				towerSelected = true;
+				towerSelected = 1;
 			}
 		});
 		
@@ -146,7 +148,6 @@ public class GameWindow {
 		JButton startRound = new JButton("Start");
 		
 		// create menuPanel
-		
 		menuPanel = new JPanel(new GridBagLayout()) {
 
 			private static final long serialVersionUID = 1L;			
@@ -165,11 +166,11 @@ public class GameWindow {
 		c.gridx = 0;
 		c.gridy = 0;
 		c.fill = GridBagConstraints.BOTH;
-		menuPanel.add(addTower, c);
+		menuPanel.add(addTomTower, c);
 		
 		c.gridx = 1;
 		c.gridy = 0;
-		menuPanel.add(addOtherTower, c);
+		menuPanel.add(addPattyTower, c);
 		
 		c.gridx = 0;
 		c.gridy = 1;
@@ -183,9 +184,15 @@ public class GameWindow {
 		// mouse events
 		mListener = new MouseListener() {
 			public void mouseClicked(MouseEvent e) {
-				if (towerSelected) {
-					new Tower(e.getX()-xOffset, e.getY()-yOffset, renderList);
-					towerSelected = false;
+				
+				switch (towerSelected) {
+				case 0:
+					new TomTower(e.getX()-xOffset, e.getY()-yOffset, renderList);
+					towerSelected = -1;
+					break;
+				case 1:
+					new PattyTower(e.getX()-xOffset, e.getY()-yOffset, renderList);
+					towerSelected = -1;
 				}
 			}
 			public void mousePressed(MouseEvent e) {mouseState = true;}
