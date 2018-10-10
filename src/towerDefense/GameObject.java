@@ -9,16 +9,19 @@ public class GameObject {
 	private int imgID;
 	private int imgWidth, imgHeight;
 	
-	private ArrayList<GameObject> renderList;
+	private static ArrayList<GameObject> renderList;
 	
-	public GameObject(float x, float y, int w, int h, int imgID, ArrayList<GameObject> r) {
+	public GameObject(float x, float y, int w, int h, int imgID) {
 		this.x = x;
 		this.y = y;
 		this.imgID = imgID;
 		this.imgWidth = w;
 		this.imgHeight = h;
-		this.renderList = r;
-		this.renderList.add(this);
+		renderList.add(this);
+	}
+	
+	public static void linkRenderList(ArrayList<GameObject> r) {
+		renderList = r;
 	}
 	
 	public void move(float xSpeed, float ySpeed, double weight) {

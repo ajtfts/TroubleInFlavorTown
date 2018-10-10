@@ -20,19 +20,22 @@ import java.util.Scanner;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class GameWindow {
 
 	public static final int TILE_SIZE = 64;
 	
-	private BufferedImage[] resArray; // array of all images
+	private BufferedImage[] tileResArray, objectResArray; // array of all tile images and gameobject images, respectively
 	
 	private int windowWidth = 1200, windowHeight = 675;
 	private int mainPanelWidth = (int) (windowWidth * (5.0/6.0));
 	
 	private JFrame frame;
 	private JPanel mainPanel, menuPanel;
+	private JLabel healthLabel, moneyLabel;
+	private JButton addTomTower, addPattyTower;
 	
 	private MouseListener mListener;
 	private boolean mouseState = false;
@@ -78,7 +81,7 @@ public class GameWindow {
 		for (int i = 0; i < mapHeight; i++) {
 			for (int j = 0; j < mapWidth; j++) {
 				g.drawImage(
-						resArray[tileDict.get(tileInfo.charAt(i*mapWidth+j))], // grab the correct image for the current tile from resArray
+						tileResArray[tileDict.get(tileInfo.charAt(i*mapWidth+j))], // grab the correct image for the current tile from resArray
 						j*TILE_SIZE+xOffset, i*TILE_SIZE+yOffset,
 						TILE_SIZE, TILE_SIZE, null);
 			}
@@ -94,8 +97,12 @@ public class GameWindow {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 		
-		// load all resources into resArray
-		resArray = ResourceLoader.load();
+		// link GameObject list to GameObject class
+		GameObject.linkRenderList(renderList);
+		
+		// load resources into tileResArray and objectResArray
+		tileResArray = ResourceLoader.loadTileImages();
+		objectResArray = ResourceLoader.loadObjectImages();
 	
 		// create mainPanel object
 		mainPanel = new JPanel() {
@@ -113,7 +120,7 @@ public class GameWindow {
 					float[] pos = cur.getPos();
 					int[] dims = cur.getImgDims();
 					g.drawImage(
-							resArray[cur.getImageID()],
+							objectResArray[cur.getImageID()],
 							(int) (pos[0]+xOffset) - (dims[0] / 2), (int) (pos[1]+yOffset) - (dims[1] / 2),
 							dims[0], dims[1], null);
 				}
@@ -126,8 +133,12 @@ public class GameWindow {
 		
 		// begin creating all the components we will add to menuPanel
 		
+		// health and money labels 
+		healthLabel = new JLabel("Health: ");
+		moneyLabel = new JLabel("Money: ");
+		
 		// button to add a tower to the map
-		JButton addTomTower = new JButton("Tom Tosser");
+		addTomTower = new JButton("Tom Tosser");
 		
 		addTomTower.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -136,7 +147,7 @@ public class GameWindow {
 		});
 		
 		// another button to add a different tower
-		JButton addPattyTower = new JButton("Patty Tosser");
+		addPattyTower = new JButton("Patty Tosser");
 		
 		addPattyTower.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -162,18 +173,28 @@ public class GameWindow {
 		
 		// setup GridBag Constraints for menuPanel
 		GridBagConstraints c = new GridBagConstraints();
+		c.fill = GridBagConstraints.BOTH;
 		
 		c.gridx = 0;
 		c.gridy = 0;
-		c.fill = GridBagConstraints.BOTH;
-		menuPanel.add(addTomTower, c);
-		
-		c.gridx = 1;
-		c.gridy = 0;
-		menuPanel.add(addPattyTower, c);
+		c.gridwidth = 2;
+		menuPanel.add(healthLabel);
 		
 		c.gridx = 0;
 		c.gridy = 1;
+		menuPanel.add(moneyLabel);
+		
+		c.gridx = 0;
+		c.gridy = 2;
+		c.gridwidth = 1;
+		menuPanel.add(addTomTower, c);
+		
+		c.gridx = 1;
+		c.gridy = 2;
+		menuPanel.add(addPattyTower, c);
+		
+		c.gridx = 0;
+		c.gridy = 3;
 		c.gridwidth = 2;
 		menuPanel.add(startRound, c);
 		
@@ -187,11 +208,11 @@ public class GameWindow {
 				
 				switch (towerSelected) {
 				case 0:
-					new TomTower(e.getX()-xOffset, e.getY()-yOffset, renderList);
+					new TomTower(e.getX()-xOffset, e.getY()-yOffset);
 					towerSelected = -1;
 					break;
 				case 1:
-					new PattyTower(e.getX()-xOffset, e.getY()-yOffset, renderList);
+					new PattyTower(e.getX()-xOffset, e.getY()-yOffset);
 					towerSelected = -1;
 				}
 			}

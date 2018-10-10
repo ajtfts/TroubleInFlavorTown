@@ -7,7 +7,8 @@ import java.util.ArrayList;
 public class RunGame {
 
 	private static GameWindow window;
-	private static ArrayList<GameObject> r;
+	
+	private static int playerHealth = 100, playerMoney = 100;
 	
 	private static final int TARGET_FPS = 60;
 	private static final long OPTIMAL_TIME = 1000000000 / TARGET_FPS; // convert target frames-per-second to target time between frames in nanoseconds
@@ -15,7 +16,6 @@ public class RunGame {
 	
 	public static void main(String[] args) {
 		window = new GameWindow();
-		r = window.getRenderList();
 		
 		// setup the initial state of the game
 		window.loadMap("maptest.txt");

@@ -10,12 +10,9 @@ public class ResourceLoader {
 	
 	private static BufferedImage[] images;
 	
-	public static BufferedImage[] load() {
+	public static BufferedImage[] loadObjectImages() {
 		try {
 			images = new BufferedImage[] {
-					ImageIO.read(new File("default.png")),
-					ImageIO.read(new File("tile_ground.png")),
-					ImageIO.read(new File("tile_path.png")),
 					ImageIO.read(new File("TomTower.png")),
 					ImageIO.read(new File("PattyTower.png"))
 			};
@@ -26,6 +23,20 @@ public class ResourceLoader {
 		return images;
 	}
 	
+	public static BufferedImage[] loadTileImages() {
+		try {
+			images = new BufferedImage[] {
+					ImageIO.read(new File("default.png")),
+					ImageIO.read(new File("tile_ground.png")),
+					ImageIO.read(new File("tile_path.png"))
+			};
+		} catch (IOException e) {
+			System.out.println("Failed to load resources.");
+			e.printStackTrace();
+		}
+		return images;
+	}
+ 	
 	public static BufferedImage load(String fname) {
 		try {
 			return ImageIO.read(new File(fname));
