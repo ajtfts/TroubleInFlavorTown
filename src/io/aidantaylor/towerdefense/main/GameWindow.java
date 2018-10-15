@@ -1,36 +1,45 @@
-package towerDefense;
+package io.aidantaylor.towerdefense.main;
 
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.MouseInfo;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Scanner;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+
+import io.aidantaylor.towerdefense.utils.GameMap;
+import io.aidantaylor.towerdefense.utils.ResourceLoader;
+
+import io.aidantaylor.towerdefense.gameobject.*;
 
 public class GameWindow {
 
 	public static final int TILE_SIZE = 64;
 	
-	private BufferedImage[] tileResArray, objectResArray; // array of all tile images and gameobject images, respectively
+	private Player player;
+	private GameMap map;
+	
+	private Map<Class<? extends Tower>, BufferedImage> objectDict;
+	private Map<Character, BufferedImage> tileDict;
 	
 	private int windowWidth = 1200, windowHeight = 675;
 	private int mainPanelWidth = (int) (windowWidth * (5.0/6.0));
+	private int xOffset = 0, yOffset = 0;
 	
 	private JFrame frame;
 	private JPanel mainPanel, menuPanel;
@@ -39,52 +48,47 @@ public class GameWindow {
 	
 	private MouseListener mListener;
 	private boolean mouseState = false;
-	private int towerSelected = -1;
+	
+	private Class<? extends Tower> towerSelected;
 	
 	private ArrayList<GameObject> renderList = new ArrayList<GameObject>();
-	private int xOffset = 0, yOffset = 0;
 	
-	private int mapWidth, mapHeight;
-	private String tileInfo = "";
-	private Map<Character, Integer> tileDict = new HashMap<Character, Integer>();
+	public void setPlayer(Player p) {
+		player = p;
+		healthLabel.setText("Health: " + Integer.toString(player.getHealth()));
+		moneyLabel.setText("Money: " + Integer.toString(player.getMoney()));
+	}
 	
-	public void loadMap(String fname) { // takes text file, converts it into a string containing tile information
-		File f = new File(fname);
-		try {
-			Scanner sc = new Scanner(f);
-			
-			int num = 1;
-			while (sc.hasNextLine()) {
-				String line = sc.nextLine();
-				if (num == 1) {
-					String[] dims = line.split("x");
-					mapWidth = Integer.parseInt(dims[0]);
-					mapHeight = Integer.parseInt(dims[1]);
-				} else {
-					tileInfo += line;
-				}
-				num++;
-			}
-			sc.close();
+	public void loadMap(GameMap m) {
 		
-			// initialize xOffset and yOffset so as to center map
-			xOffset = (mainPanelWidth / 2) - TILE_SIZE * mapWidth / 2;
-			yOffset = (windowHeight / 2) - TILE_SIZE * mapHeight / 2;
+		map = m;
 		
-		} catch (FileNotFoundException e) {
-			System.out.println("Failed to find map file.");
-			e.printStackTrace();
-		}
+		// initialize xOffset and yOffset so as to center map
+		xOffset = (mainPanelWidth / 2) - TILE_SIZE * map.getWidth() / 2;
+		yOffset = (windowHeight / 2) - TILE_SIZE * map.getHeight() / 2;
+		
 	}
 	
 	private void drawMap(Graphics g) {
-		for (int i = 0; i < mapHeight; i++) {
-			for (int j = 0; j < mapWidth; j++) {
+		for (int i = 0; i < map.getHeight(); i++) {
+			for (int j = 0; j < map.getWidth(); j++) {
 				g.drawImage(
-						tileResArray[tileDict.get(tileInfo.charAt(i*mapWidth+j))], // grab the correct image for the current tile from resArray
+						tileDict.get(map.getData().charAt(i*map.getWidth()+j)), // grab the correct image for the current tile from resArray
 						j*TILE_SIZE+xOffset, i*TILE_SIZE+yOffset,
 						TILE_SIZE, TILE_SIZE, null);
 			}
+		}
+	}
+	
+	private void drawGameObjects(Graphics g) {
+		for (int i = 0; i < renderList.size(); i++) {
+			GameObject cur = renderList.get(i);
+			float[] pos = cur.getPos();
+			int[] dims = cur.getImgDims();
+			g.drawImage(
+					objectDict.get(cur.getClass()),
+					(int) (pos[0]+xOffset) - (dims[0] / 2), (int) (pos[1]+yOffset) - (dims[1] / 2),
+					dims[0], dims[1], null);
 		}
 	}
 	
@@ -101,8 +105,8 @@ public class GameWindow {
 		GameObject.linkRenderList(renderList);
 		
 		// load resources into tileResArray and objectResArray
-		tileResArray = ResourceLoader.loadTileImages();
-		objectResArray = ResourceLoader.loadObjectImages();
+		tileDict = ResourceLoader.loadTileImages();
+		objectDict = ResourceLoader.loadObjectImages();
 	
 		// create mainPanel object
 		mainPanel = new JPanel() {
@@ -112,18 +116,22 @@ public class GameWindow {
 			protected void paintComponent(Graphics g) {
 				super.paintComponent(g);
 				
-				drawMap(g);
+				if (map != null) {
+					drawMap(g);
+				}
 				
 				// draw all GameObjects inside renderList
-				for (int i = 0; i < renderList.size(); i++) {
-					GameObject cur = renderList.get(i);
-					float[] pos = cur.getPos();
-					int[] dims = cur.getImgDims();
+				drawGameObjects(g);
+				
+				if (towerSelected != null) {
+					Point pos = MouseInfo.getPointerInfo().getLocation();
+					SwingUtilities.convertPointFromScreen(pos, mainPanel);
 					g.drawImage(
-							objectResArray[cur.getImageID()],
-							(int) (pos[0]+xOffset) - (dims[0] / 2), (int) (pos[1]+yOffset) - (dims[1] / 2),
-							dims[0], dims[1], null);
+							objectDict.get(towerSelected),
+							(int) pos.getX(), (int) pos.getY(),
+							40, 40, null);
 				}
+				
 			}
 		};
 		
@@ -131,45 +139,34 @@ public class GameWindow {
 		mainPanel.setBackground(Color.DARK_GRAY);
 		frame.add(mainPanel);
 		
+		// create menuPanel
+		menuPanel = new JPanel(new GridBagLayout());
+		menuPanel.setPreferredSize(new Dimension((int) (windowWidth * (1.0/6.0)), windowHeight)); // set menuPanel size
+		
 		// begin creating all the components we will add to menuPanel
 		
 		// health and money labels 
-		healthLabel = new JLabel("Health: ");
-		moneyLabel = new JLabel("Money: ");
+		healthLabel = new JLabel();
+		moneyLabel = new JLabel();
 		
 		// button to add a tower to the map
 		addTomTower = new JButton("Tom Tosser");
-		
 		addTomTower.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				towerSelected = 0;
+				towerSelected = TomTower.class;
 			}
 		});
 		
 		// another button to add a different tower
 		addPattyTower = new JButton("Patty Tosser");
-		
 		addPattyTower.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				towerSelected = 1;
+				towerSelected = PattyTower.class;
 			}
 		});
 		
 		//button to start the round
 		JButton startRound = new JButton("Start");
-		
-		// create menuPanel
-		menuPanel = new JPanel(new GridBagLayout()) {
-
-			private static final long serialVersionUID = 1L;			
-			
-			protected void paintComponent(Graphics g) {
-				super.paintComponent(g);
-			}
-			
-		};
-		
-		menuPanel.setPreferredSize(new Dimension((int) (windowWidth * (1.0/6.0)), windowHeight)); // set menuPanel size
 		
 		// setup GridBag Constraints for menuPanel
 		GridBagConstraints c = new GridBagConstraints();
@@ -206,15 +203,21 @@ public class GameWindow {
 		mListener = new MouseListener() {
 			public void mouseClicked(MouseEvent e) {
 				
-				switch (towerSelected) {
-				case 0:
-					new TomTower(e.getX()-xOffset, e.getY()-yOffset);
-					towerSelected = -1;
-					break;
-				case 1:
-					new PattyTower(e.getX()-xOffset, e.getY()-yOffset);
-					towerSelected = -1;
+				if (towerSelected != null) {
+					
+					if (towerSelected == TomTower.class) {
+						player.setMoney(player.getMoney()-TomTower.getPrice());
+						new TomTower(e.getX()-xOffset, e.getY()-yOffset);
+					} else if (towerSelected == PattyTower.class) {
+						player.setMoney(player.getMoney()-PattyTower.getPrice());
+						new PattyTower(e.getX()-xOffset, e.getY()-yOffset);
+					}
+					
+					moneyLabel.setText("Money: "+player.getMoney());
+					towerSelected = null;
+					
 				}
+			
 			}
 			public void mousePressed(MouseEvent e) {mouseState = true;}
 			public void mouseReleased(MouseEvent e) {mouseState = false;}
@@ -223,14 +226,19 @@ public class GameWindow {
 		};
 		
 		mainPanel.addMouseListener(mListener);
-		
-		// setup a string to integer dictionary to determine what texture should be used for a particular character in the map file
-		tileDict.put('g', 1);
-		tileDict.put('p', 2);
+	
 	}
 	
 	public JPanel getMainPanel() {
 		return this.mainPanel;
+	}
+	
+	public JLabel getHealthLabel() {
+		return this.healthLabel;
+	}
+	
+	public JLabel getMoneyLabel() {
+		return this.moneyLabel;
 	}
 	
 	public ArrayList<GameObject> getRenderList() {

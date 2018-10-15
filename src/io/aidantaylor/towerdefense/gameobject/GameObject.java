@@ -1,20 +1,18 @@
-package towerDefense;
+package io.aidantaylor.towerdefense.gameobject;
 
 import java.util.ArrayList;
 
-public class GameObject {
+public abstract class GameObject {
 	
 	private float x, y;
-	
-	private int imgID;
+
 	private int imgWidth, imgHeight;
 	
 	private static ArrayList<GameObject> renderList;
 	
-	public GameObject(float x, float y, int w, int h, int imgID) {
+	public GameObject(float x, float y, int w, int h) {
 		this.x = x;
 		this.y = y;
-		this.imgID = imgID;
 		this.imgWidth = w;
 		this.imgHeight = h;
 		renderList.add(this);
@@ -57,15 +55,6 @@ public class GameObject {
 	public void setImgDims(int[] dims) {
 		this.imgWidth = dims[0];
 		this.imgHeight = dims[1];
-	}
-	
-	// get/set object image
-	public int getImageID() {
-		return imgID;
-	}
-	
-	public void setImageID(int imgID) {
-		this.imgID = imgID;
 	}
 
 }

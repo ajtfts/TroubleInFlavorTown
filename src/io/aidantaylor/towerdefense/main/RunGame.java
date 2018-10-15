@@ -1,14 +1,13 @@
-package towerDefense;
+package io.aidantaylor.towerdefense.main;
 
 import java.awt.MouseInfo;
 import java.awt.Point;
-import java.util.ArrayList;
+
+import io.aidantaylor.towerdefense.utils.GameMap;
 
 public class RunGame {
 
 	private static GameWindow window;
-	
-	private static int playerHealth = 100, playerMoney = 100;
 	
 	private static final int TARGET_FPS = 60;
 	private static final long OPTIMAL_TIME = 1000000000 / TARGET_FPS; // convert target frames-per-second to target time between frames in nanoseconds
@@ -16,9 +15,10 @@ public class RunGame {
 	
 	public static void main(String[] args) {
 		window = new GameWindow();
+		window.loadMap(new GameMap("maptest.txt"));
 		
-		// setup the initial state of the game
-		window.loadMap("maptest.txt");
+		Player player = new Player();
+		window.setPlayer(player);
 		
 		gameLoop();
 	}
@@ -68,14 +68,19 @@ public class RunGame {
 			window.getMainPanel().repaint();
 			
 			try {
-				// Sleep for OPTIMAL_TIME - how long updateLogic and repaint took. Divide by 10^6 as Thread.sleep takes milliseconds
-				Thread.sleep((lastFrame-System.nanoTime() + OPTIMAL_TIME)/1000000); 
+				
+				now = System.nanoTime();
+				
+				if (lastFrame - now >= 0)
+					// Sleep for OPTIMAL_TIME - how long updateLogic and repaint took. Divide by 10^6 as Thread.sleep takes milliseconds
+					Thread.sleep((lastFrame-now + OPTIMAL_TIME)/1000000); 
+				else
+					Thread.sleep(OPTIMAL_TIME/1000000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
 	}
-	
 }
 
 

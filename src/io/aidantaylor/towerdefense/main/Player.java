@@ -1,11 +1,11 @@
-package towerDefense;
+package io.aidantaylor.towerdefense.main;
 
 public class Player {
 
 	private int health, money;
 	
 	public Player() {
-		health = 100;
+		health = 10;
 		money = 100;
 	}
 	
