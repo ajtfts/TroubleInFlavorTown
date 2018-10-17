@@ -84,10 +84,10 @@ public class GameWindow {
 		for (int i = 0; i < renderList.size(); i++) {
 			GameObject cur = renderList.get(i);
 			float[] pos = cur.getPos();
-			int[] dims = cur.getImgDims();
+			int[] dims = cur.getDims();
 			g.drawImage(
 					objectDict.get(cur.getClass()),
-					(int) (pos[0]+xOffset) - (dims[0] / 2), (int) (pos[1]+yOffset) - (dims[1] / 2),
+					(int) (pos[0]+xOffset), (int) (pos[1]+yOffset),
 					dims[0], dims[1], null);
 		}
 	}
@@ -204,14 +204,16 @@ public class GameWindow {
 			public void mouseClicked(MouseEvent e) {
 				
 				if (towerSelected != null) {
+					Tower t1 = null;
 					
 					if (towerSelected == TomTower.class) {
 						player.setMoney(player.getMoney()-TomTower.getPrice());
-						new TomTower(e.getX()-xOffset, e.getY()-yOffset);
+						t1 = new TomTower(e.getX()-xOffset, e.getY()-yOffset, GameObject.Anchor.CENTER);
 					} else if (towerSelected == PattyTower.class) {
 						player.setMoney(player.getMoney()-PattyTower.getPrice());
-						new PattyTower(e.getX()-xOffset, e.getY()-yOffset);
+						t1 = new PattyTower(e.getX()-xOffset, e.getY()-yOffset);
 					}
+					System.out.println(t1.getPos()[0]);
 					
 					moneyLabel.setText("Money: "+player.getMoney());
 					towerSelected = null;

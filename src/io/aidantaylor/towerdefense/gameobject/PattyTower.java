@@ -7,8 +7,12 @@ public class PattyTower extends Tower {
 	
 	private static int price = 30;
 	
-	public PattyTower(int x, int y) {
+	public PattyTower(float x, float y) {
 		super(x, y, width, height);
+	}
+	
+	public PattyTower(float x, float y, Anchor a) {
+		super(x, y, width, height, a);
 	}
 	
 	public static int getPrice() {
