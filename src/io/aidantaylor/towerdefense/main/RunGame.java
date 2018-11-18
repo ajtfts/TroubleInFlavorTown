@@ -4,21 +4,26 @@ import java.awt.MouseInfo;
 import java.awt.Point;
 
 import io.aidantaylor.towerdefense.utils.GameMap;
+import io.aidantaylor.towerdefense.window.GameDisplayPanel;
+import io.aidantaylor.towerdefense.window.GameWindow;
+
+
 
 public class RunGame {
 
 	private static GameWindow window;
+	private static GameDisplayPanel display;
+	private static float aspectRatio = 16.0f/9.0f;
+	private static int windowHeight = 1200, windowWidth = (int) (windowHeight / aspectRatio);
 	
 	private static final int TARGET_FPS = 60;
 	private static final long OPTIMAL_TIME = 1000000000 / TARGET_FPS; // convert target frames-per-second to target time between frames in nanoseconds
 	private static boolean running = true;
 	
 	public static void main(String[] args) {
-		window = new GameWindow();
-		window.loadMap(new GameMap("maptest.txt"));
 		
-		Player player = new Player();
-		window.setPlayer(player);
+		window = new GameWindow(windowHeight, windowWidth, new GameMap("maptest.txt"));
+		display = window.getDisplayPanel();
 		
 		gameLoop();
 	}
@@ -46,26 +51,27 @@ public class RunGame {
 			updateLogic(deltaT);
 			
 			// change map view by dragging mouse
-			if (window.getMouseState()) {
+			if (display.getMouseState()) {
 				if (first) {
 					Point mPos = MouseInfo.getPointerInfo().getLocation();
 					mapX = (int) mPos.getX();
 					mapY = (int) mPos.getY();
-					initXOffset = window.getXOffset();
-					initYOffset = window.getYOffset();
+					initXOffset = display.getXOffset();
+					initYOffset = display.getYOffset();
+					System.out.println(initXOffset);
 					first = false;
 				} else {
 					Point mPos = MouseInfo.getPointerInfo().getLocation();
 					difX = (int) mPos.getX() - mapX;
 					difY = (int) mPos.getY() - mapY;
-					window.setOffset(initXOffset+difX, initYOffset+difY);
+					display.setOffset(initXOffset+difX, initYOffset+difY);
 				}
 			} else {
 				first = true;
 			}
 			
 			// redraw
-			window.getMainPanel().repaint();
+			display.repaint();
 			
 			try {
 				
