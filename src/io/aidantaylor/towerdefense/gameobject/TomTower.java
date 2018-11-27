@@ -15,6 +15,12 @@ public class TomTower extends Tower {
 		super(x, y, DEFAULT_WIDTH, DEFAULT_HEIGHT, a);
 	}
 
+	public void Fire() {
+		System.out.println("Fire TomTower");
+		new TowerBullet(this.getX(), this.getY(), 10, 10).changeVelocity(0, -12);;
+		
+	}
+	
 	public static int getPrice() {
 		return price;
 	}

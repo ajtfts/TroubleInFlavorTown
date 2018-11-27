@@ -2,7 +2,9 @@ package io.aidantaylor.towerdefense.main;
 
 import java.awt.MouseInfo;
 import java.awt.Point;
+import java.util.ArrayList;
 
+import io.aidantaylor.towerdefense.gameobject.GameObject;
 import io.aidantaylor.towerdefense.utils.GameMap;
 import io.aidantaylor.towerdefense.window.GameDisplayPanel;
 import io.aidantaylor.towerdefense.window.GameWindow;
@@ -16,13 +18,15 @@ public class RunGame {
 	private static float aspectRatio = 16.0f/9.0f;
 	private static int windowHeight = 1200, windowWidth = (int) (windowHeight / aspectRatio);
 	
+	private static ArrayList<GameObject> renderList = new ArrayList<GameObject>();
+	
 	private static final int TARGET_FPS = 60;
 	private static final long OPTIMAL_TIME = 1000000000 / TARGET_FPS; // convert target frames-per-second to target time between frames in nanoseconds
 	private static boolean running = true;
 	
 	public static void main(String[] args) {
 		
-		window = new GameWindow(windowHeight, windowWidth, new GameMap("maptest.txt"));
+		window = new GameWindow(windowHeight, windowWidth, new GameMap("maptest.txt"), renderList);
 		display = window.getDisplayPanel();
 		
 		gameLoop();
@@ -30,6 +34,12 @@ public class RunGame {
 	
 	private static void updateLogic(long deltaT) {
 		double w = deltaT/((double) OPTIMAL_TIME);
+		
+		for (GameObject obj : renderList) {
+			float[] velocity = obj.getVelocity();
+			obj.move(velocity[0], velocity[1], w);
+		}
+		
 	}
 	
 	private static void gameLoop() {
@@ -58,7 +68,6 @@ public class RunGame {
 					mapY = (int) mPos.getY();
 					initXOffset = display.getXOffset();
 					initYOffset = display.getYOffset();
-					System.out.println(initXOffset);
 					first = false;
 				} else {
 					Point mPos = MouseInfo.getPointerInfo().getLocation();

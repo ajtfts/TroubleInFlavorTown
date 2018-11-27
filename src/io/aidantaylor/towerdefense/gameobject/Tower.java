@@ -20,6 +20,8 @@ public abstract class Tower extends GameObject {
 		super(x, y, w, h, a);
 	}
 	
+	public abstract void Fire();
+	
 	public static Map<Class<? extends Tower>, int[]> getDictMap() {
 		return dimsDict;
 	}

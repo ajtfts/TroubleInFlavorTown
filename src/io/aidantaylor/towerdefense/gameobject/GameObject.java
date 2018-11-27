@@ -8,9 +8,11 @@ public abstract class GameObject {
 		TOP_LEFT, CENTER
 	}
 	
-	private float x, y;
-
-	private int width, height;
+	protected float x, y;
+	protected int width, height;
+	
+	protected float vx = 0, vy = 0;
+	protected float rotation = 0;
 	
 	private static ArrayList<GameObject> renderList;
 	
@@ -28,12 +30,12 @@ public abstract class GameObject {
 		
 		switch (a) {
 		case TOP_LEFT:
+			this.x = x + this.width / 2;
+			this.y = y + this.height / 2;
+			break;
+		default:
 			this.x = x;
 			this.y = y;
-			break;
-		case CENTER:
-			this.x = x - this.width / 2;
-			this.y = y - this.height / 2;
 		}
 		
 		renderList.add(this);
@@ -54,10 +56,38 @@ public abstract class GameObject {
 	}
 	
 	public float[] getPos(Anchor a) {
-		if (a == Anchor.TOP_LEFT)
+		switch (a) {
+		case TOP_LEFT:
+			return new float[] {this.x - this.width / 2, this.y - this.height / 2};
+		default:
 			return new float[] {this.x, this.y};
-		else
-			return new float[] {this.x + this.width / 2, this.y + this.height / 2};
+		}
+	}
+	
+	public float getX() {
+		return this.x;
+	}
+	
+	public float getY() {
+		return this.y;
+	}
+	
+	public float getX(Anchor a) {
+		switch (a) {
+		case TOP_LEFT:
+			return this.x - this.width / 2;
+		default:
+			return this.x;
+		}
+	}
+	
+	public float getY(Anchor a) {
+		switch (a) {
+		case TOP_LEFT:
+			return this.y - this.height / 2;
+		default:
+			return this.y;
+		}
 	}
 	
 	public void setPos(float x, float y) {
@@ -66,18 +96,30 @@ public abstract class GameObject {
 	}
 	
 	public void setPos(float x, float y, Anchor a) {
-		if (a == Anchor.TOP_LEFT) {
+		switch (a) {
+		case TOP_LEFT:
+			this.x = x + this.width / 2;
+			this.y = y + this.height / 2;
+			break;
+		default:
 			this.x = x;
 			this.y = y;
-		} else if (a == Anchor.CENTER) {
-			this.x = x-this.width/2;
-			this.y = y-this.height/2;
+			break;
 		}
 	}
 	
 	public void setPos(float[] pos) {
 		this.x = pos[0];
 		this.y = pos[1];
+	}
+	
+	public void changeVelocity(float xVelocity, float yVelocity) {
+		this.vx = xVelocity;
+		this.vy = yVelocity;
+	}
+	
+	public float[] getVelocity() {
+		return new float[] {this.vx, this.vy};
 	}
 	
 	// get/set image dimensions

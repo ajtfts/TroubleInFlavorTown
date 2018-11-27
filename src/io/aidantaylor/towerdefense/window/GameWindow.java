@@ -1,8 +1,11 @@
 package io.aidantaylor.towerdefense.window;
 
+import java.util.ArrayList;
+
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 
+import io.aidantaylor.towerdefense.gameobject.GameObject;
 import io.aidantaylor.towerdefense.utils.GameMap;
 
 public class GameWindow extends JFrame {
@@ -14,7 +17,7 @@ public class GameWindow extends JFrame {
 	private GameDisplayPanel display;
 	private GameMenuPanel menu;
 
-	public GameWindow(int w, int h, GameMap m) {
+	public GameWindow(int w, int h, GameMap m, ArrayList<GameObject> rList) {
 		
 		// initialize JFrame
 		super("Trouble in FlavorTown");
@@ -27,7 +30,7 @@ public class GameWindow extends JFrame {
 		height = h;
 	
 		// create display panel. width should be 5/6's of the window width, height should be same as window
-		display = new GameDisplayPanel((int) (width * (5.0/6.0)), height, m);
+		display = new GameDisplayPanel((int) (width * (5.0/6.0)), height, m, rList);
 		add(display);
 		
 		// create menu panel. width should take up the 1/6 of the screen that the main game display doesn't.

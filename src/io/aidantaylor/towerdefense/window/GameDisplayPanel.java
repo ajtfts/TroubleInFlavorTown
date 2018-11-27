@@ -25,10 +25,11 @@ public class GameDisplayPanel extends JPanel {
 	public static final int TILE_SIZE = 64;
 	
 	GameMap map;
-	private ArrayList<GameObject> renderList = new ArrayList<GameObject>();
+	
+	ArrayList<GameObject> renderList; 
 	
 	private Map<Character, BufferedImage> tileDict;
-	private Map<Class<? extends Tower>, BufferedImage> objectDict;
+	private Map<Class<? extends GameObject>, BufferedImage> objectDict;
 	
 	private MouseListener mListener;
 	private boolean mouseState = false;
@@ -38,10 +39,12 @@ public class GameDisplayPanel extends JPanel {
 	
 	private Class<? extends Tower> towerPreview;
 	
-	public GameDisplayPanel(int w, int h, GameMap m) {
+	public GameDisplayPanel(int w, int h, GameMap m, ArrayList<GameObject> rList) {
 		
 		width = w;
 		height = h;
+		
+		renderList = rList;
 		
 		setPreferredSize(new Dimension(width, height));
 		setBackground(Color.DARK_GRAY);
@@ -52,7 +55,7 @@ public class GameDisplayPanel extends JPanel {
 			public void mouseClicked(MouseEvent e) {
 				if (towerPreview != null) {
 					if (towerPreview == TomTower.class) {
-						new TomTower(e.getX()-xOffset, e.getY()-yOffset);
+						new TomTower(e.getX()-xOffset, e.getY()-yOffset).Fire();
 					} else if (towerPreview == PattyTower.class) {
 						new PattyTower(e.getX()-xOffset, e.getY()-yOffset);
 					}

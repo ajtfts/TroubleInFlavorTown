@@ -12,13 +12,14 @@ import io.aidantaylor.towerdefense.gameobject.*;
 
 public class ResourceLoader {
 	
-	public static Map<Class<? extends Tower>, BufferedImage> loadObjectImages() {
+	public static Map<Class<? extends GameObject>, BufferedImage> loadObjectImages() {
 		
-		Map<Class<? extends Tower>, BufferedImage> objectImages = new HashMap<Class<? extends Tower>, BufferedImage>();
+		Map<Class<? extends GameObject>, BufferedImage> objectImages = new HashMap<Class<? extends GameObject>, BufferedImage>();
 		
 		try {
 			objectImages.put(TomTower.class, ImageIO.read(new File("TomTower.png")));
 			objectImages.put(PattyTower.class, ImageIO.read(new File("PattyTower.png")));
+			objectImages.put(TowerBullet.class, ImageIO.read(new File("TomBullet.png")));
 		} catch (IOException e) {
 			System.out.println("Failed to load resources.");
 			e.printStackTrace();
