@@ -3,10 +3,12 @@ package io.aidantaylor.towerdefense.window;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Map;
@@ -55,7 +57,8 @@ public class GameDisplayPanel extends JPanel {
 			public void mouseClicked(MouseEvent e) {
 				if (towerPreview != null) {
 					if (towerPreview == TomTower.class) {
-						new TomTower(e.getX()-xOffset, e.getY()-yOffset).Fire();
+						TomTower t = new TomTower(e.getX()-xOffset, e.getY()-yOffset);
+						t.Fire();
 					} else if (towerPreview == PattyTower.class) {
 						new PattyTower(e.getX()-xOffset, e.getY()-yOffset);
 					}
@@ -79,13 +82,14 @@ public class GameDisplayPanel extends JPanel {
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
+		Graphics2D g2d = (Graphics2D) g;
 		
-		drawMap(g); // draw map
-		drawGameObjects(g); // draw all GameObjects inside renderList
-		drawSelectedTower(g); // draw a preview image of a selected tower on the cursor
+		drawMap(g2d); // draw map
+		drawGameObjects(g2d); // draw all GameObjects inside renderList
+		drawSelectedTower(g2d); // draw a preview image of a selected tower on the cursor
 	}
 	
-	private void drawMap(Graphics g) {
+	private void drawMap(Graphics2D g) {
 		for (int i = 0; i < map.getHeight(); i++) {
 			for (int j = 0; j < map.getWidth(); j++) {
 				g.drawImage(
@@ -96,18 +100,30 @@ public class GameDisplayPanel extends JPanel {
 		}
 	}
 	
-	private void drawGameObjects(Graphics g) {
+	private void drawGameObjects(Graphics2D g) {
+		
+		AffineTransform transform;
+		BufferedImage img;
+		
+		
+		
 		for (GameObject cur : renderList) {
+			
 			float[] pos = cur.getPos();
 			int[] dims = cur.getDims();
-			g.drawImage(
-					objectDict.get(cur.getClass()),
-					(int) (pos[0]+xOffset) - (dims[0] / 2),(int) (pos[1]+yOffset) - (dims[1] / 2),
-					dims[0], dims[1], null);
+			
+			img = objectDict.get(cur.getClass());
+			
+			transform = AffineTransform.getTranslateInstance((pos[0]+xOffset) - (dims[0] / 2), (pos[1]+yOffset) - (dims[1] / 2));
+			transform.scale((double) dims[0]/img.getWidth(), (double) dims[1]/img.getHeight());
+			transform.rotate(Math.toRadians(cur.getRotation()), img.getWidth()/2, img.getHeight()/2);
+			
+			
+			g.drawImage(img, transform, null);
 		}
 	}
 	
-	private void drawSelectedTower(Graphics g) {
+	private void drawSelectedTower(Graphics2D g) {
 		if (towerPreview != null) {
 			Point pos = MouseInfo.getPointerInfo().getLocation();
 			SwingUtilities.convertPointFromScreen(pos, this);

@@ -3,8 +3,12 @@ package io.aidantaylor.towerdefense.main;
 import java.awt.MouseInfo;
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.ListIterator;
 
 import io.aidantaylor.towerdefense.gameobject.GameObject;
+import io.aidantaylor.towerdefense.gameobject.TomTower;
+import io.aidantaylor.towerdefense.gameobject.Tower;
 import io.aidantaylor.towerdefense.utils.GameMap;
 import io.aidantaylor.towerdefense.window.GameDisplayPanel;
 import io.aidantaylor.towerdefense.window.GameWindow;
@@ -39,7 +43,6 @@ public class RunGame {
 			float[] velocity = obj.getVelocity();
 			obj.move(velocity[0], velocity[1], w);
 		}
-		
 	}
 	
 	private static void gameLoop() {

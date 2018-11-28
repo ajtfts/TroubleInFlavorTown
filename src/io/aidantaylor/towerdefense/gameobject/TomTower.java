@@ -16,8 +16,10 @@ public class TomTower extends Tower {
 	}
 
 	public void Fire() {
-		System.out.println("Fire TomTower");
-		new TowerBullet(this.getX(), this.getY(), 10, 10).changeVelocity(0, -12);;
+		System.out.printf("Fire TomTower at %f degrees\n", this.rotation);
+		float xVelocity = (float) Math.cos(Math.toRadians(this.rotation-90));
+		float yVelocity = (float) Math.sin(Math.toRadians(this.rotation-90));
+		new TowerBullet(this.getX(), this.getY(), 10, 10).setVelocity(xVelocity, yVelocity);;
 		
 	}
 	

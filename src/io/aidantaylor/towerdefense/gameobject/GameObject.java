@@ -21,6 +21,9 @@ public abstract class GameObject {
 		this.y = y;
 		this.width = w;
 		this.height = h;
+		
+		this.lookAt(0, 0);
+		
 		renderList.add(this);
 	}
 	
@@ -113,13 +116,29 @@ public abstract class GameObject {
 		this.y = pos[1];
 	}
 	
-	public void changeVelocity(float xVelocity, float yVelocity) {
+	public void setVelocity(float xVelocity, float yVelocity) {
 		this.vx = xVelocity;
 		this.vy = yVelocity;
 	}
 	
 	public float[] getVelocity() {
 		return new float[] {this.vx, this.vy};
+	}
+	
+	public float getRotation() {
+		return this.rotation;
+	}
+	
+	public void setRotation(float r) {
+		this.rotation = r;
+	}
+	
+	public void changeRotation(float dr) {
+		this.rotation += dr;
+	}
+	
+	public void lookAt(float targetX, float targetY) {
+		this.setRotation((float) Math.toDegrees(Math.atan2(targetY - this.y, targetX - this.x)) + 90);
 	}
 	
 	// get/set image dimensions
