@@ -18,6 +18,7 @@ import javax.swing.SwingUtilities;
 
 import io.aidantaylor.towerdefense.gameobject.*;
 import io.aidantaylor.towerdefense.utils.GameMap;
+import io.aidantaylor.towerdefense.utils.IntObj;
 import io.aidantaylor.towerdefense.utils.ResourceLoader;
 
 public class GameDisplayPanel extends JPanel {
@@ -39,12 +40,16 @@ public class GameDisplayPanel extends JPanel {
 	private int width, height;
 	private int xOffset = 0, yOffset = 0;
 	
+	private IntObj playerMoney;
+	
 	private Class<? extends Tower> towerPreview;
 	
-	public GameDisplayPanel(int w, int h, GameMap m, ArrayList<GameObject> rList) {
+	public GameDisplayPanel(int w, int h, GameMap m, IntObj money, ArrayList<GameObject> rList) {
 		
 		width = w;
 		height = h;
+		
+		playerMoney = money;
 		
 		renderList = rList;
 		
@@ -58,9 +63,11 @@ public class GameDisplayPanel extends JPanel {
 				if (towerPreview != null) {
 					if (towerPreview == TomTower.class) {
 						TomTower t = new TomTower(e.getX()-xOffset, e.getY()-yOffset);
+						playerMoney.value -= Tower.getPriceMap().get(TomTower.class);
 						t.Fire();
 					} else if (towerPreview == PattyTower.class) {
 						new PattyTower(e.getX()-xOffset, e.getY()-yOffset);
+						playerMoney.value -= Tower.getPriceMap().get(PattyTower.class);
 					}
 					
 					towerPreview = null;
@@ -127,8 +134,8 @@ public class GameDisplayPanel extends JPanel {
 		if (towerPreview != null) {
 			Point pos = MouseInfo.getPointerInfo().getLocation();
 			SwingUtilities.convertPointFromScreen(pos, this);
-			int previewWidth = Tower.getDictMap().get(towerPreview)[0];
-			int previewHeight = Tower.getDictMap().get(towerPreview)[1];
+			int previewWidth = Tower.getDimsMap().get(towerPreview)[0];
+			int previewHeight = Tower.getDimsMap().get(towerPreview)[1];
 			g.drawImage(
 					objectDict.get(towerPreview),
 					(int) pos.getX() - previewWidth / 2, (int) pos.getY() - previewHeight / 2,

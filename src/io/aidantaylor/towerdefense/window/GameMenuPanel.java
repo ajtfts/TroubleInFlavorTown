@@ -9,9 +9,12 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 import io.aidantaylor.towerdefense.gameobject.PattyTower;
 import io.aidantaylor.towerdefense.gameobject.TomTower;
+import io.aidantaylor.towerdefense.gameobject.Tower;
+import io.aidantaylor.towerdefense.utils.IntObj;
 
 public class GameMenuPanel extends JPanel {
 	
@@ -25,12 +28,14 @@ public class GameMenuPanel extends JPanel {
 	private JButton addTomTower, addPattyTower;
 	private JButton startRound;
 	
-	public GameMenuPanel(int w, int h, GameDisplayPanel d) {
+	private IntObj playerMoney;
+	
+	public GameMenuPanel(int w, int h, IntObj m, GameDisplayPanel d) {
 		super(new GridBagLayout());
 		
 		width = w;
 		height = h;
-		
+		playerMoney = m;
 		display = d;
 		
 		setPreferredSize(new Dimension(width, height));
@@ -45,7 +50,8 @@ public class GameMenuPanel extends JPanel {
 		addTomTower = new JButton("Tom Tosser");
 		addTomTower.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				display.setTowerPreview(TomTower.class);
+				if (playerMoney.value >= Tower.getPriceMap().get(TomTower.class)) 
+					display.setTowerPreview(TomTower.class);
 			}
 		});
 		
@@ -53,7 +59,8 @@ public class GameMenuPanel extends JPanel {
 		addPattyTower = new JButton("Patty Tosser");
 		addPattyTower.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				display.setTowerPreview(PattyTower.class);
+				if (playerMoney.value >= Tower.getPriceMap().get(PattyTower.class))
+					display.setTowerPreview(PattyTower.class);
 			}
 		});
 		
@@ -67,11 +74,14 @@ public class GameMenuPanel extends JPanel {
 				c.gridx = 0;
 				c.gridy = 0;
 				c.gridwidth = 2;
-				add(healthLabel);
+				c.anchor = GridBagConstraints.LINE_END;
+				healthLabel.setHorizontalAlignment(SwingConstants.CENTER);
+				add(healthLabel, c);
 				
 				c.gridx = 0;
 				c.gridy = 1;
-				add(moneyLabel);
+				moneyLabel.setHorizontalAlignment(SwingConstants.CENTER);
+				add(moneyLabel, c);
 				
 				c.gridx = 0;
 				c.gridy = 2;
@@ -86,6 +96,14 @@ public class GameMenuPanel extends JPanel {
 				c.gridy = 3;
 				c.gridwidth = 2;
 				add(startRound, c);
+	}
+	
+	public void setHealthLabel(int h) {
+		healthLabel.setText("Health: "+h);
+	}
+	
+	public void setMoneyLabel(int m) {
+		moneyLabel.setText("Money: "+m);
 	}
 	
 }

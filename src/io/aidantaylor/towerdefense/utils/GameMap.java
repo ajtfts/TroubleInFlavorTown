@@ -8,6 +8,7 @@ public class GameMap {
 
 	private int width, height;
 	private String data = "";
+	private char[][] dataArray;
 	
 	public GameMap(String fname) {
 		
@@ -22,6 +23,7 @@ public class GameMap {
 					String[] dims = line.split("x");
 					width = Integer.parseInt(dims[0]);
 					height = Integer.parseInt(dims[1]);
+					dataArray = new char[width][height];
 				} else {
 					data += line;
 				}

@@ -22,8 +22,6 @@ public abstract class GameObject {
 		this.width = w;
 		this.height = h;
 		
-		this.lookAt(0, 0);
-		
 		renderList.add(this);
 	}
 	

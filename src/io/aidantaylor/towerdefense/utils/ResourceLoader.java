@@ -20,6 +20,7 @@ public class ResourceLoader {
 			objectImages.put(TomTower.class, ImageIO.read(new File("TomTower.png")));
 			objectImages.put(PattyTower.class, ImageIO.read(new File("PattyTower.png")));
 			objectImages.put(TowerBullet.class, ImageIO.read(new File("TomBullet.png")));
+			objectImages.put(OrangeEnemy.class, ImageIO.read(new File("OrangeEnemy.png")));
 		} catch (IOException e) {
 			System.out.println("Failed to load resources.");
 			e.printStackTrace();
@@ -36,6 +37,8 @@ public class ResourceLoader {
 		try {
 			tileImages.put('g', ImageIO.read(new File("tile_ground.png")));
 			tileImages.put('p', ImageIO.read(new File("tile_path.png")));
+			tileImages.put('s', ImageIO.read(new File("tile_path_start.png")));
+			tileImages.put('e', ImageIO.read(new File("tile_path_end.png")));
 		} catch (IOException e) {
 			System.out.println("Failed to load resources.");
 			e.printStackTrace();

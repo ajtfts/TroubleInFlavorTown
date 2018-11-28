@@ -3,14 +3,13 @@ package io.aidantaylor.towerdefense.main;
 import java.awt.MouseInfo;
 import java.awt.Point;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.ListIterator;
 
 import io.aidantaylor.towerdefense.gameobject.GameObject;
-import io.aidantaylor.towerdefense.gameobject.TomTower;
-import io.aidantaylor.towerdefense.gameobject.Tower;
+import io.aidantaylor.towerdefense.gameobject.OrangeEnemy;
 import io.aidantaylor.towerdefense.utils.GameMap;
+import io.aidantaylor.towerdefense.utils.IntObj;
 import io.aidantaylor.towerdefense.window.GameDisplayPanel;
+import io.aidantaylor.towerdefense.window.GameMenuPanel;
 import io.aidantaylor.towerdefense.window.GameWindow;
 
 
@@ -19,9 +18,11 @@ public class RunGame {
 
 	private static GameWindow window;
 	private static GameDisplayPanel display;
+	private static GameMenuPanel menu;
 	private static float aspectRatio = 16.0f/9.0f;
 	private static int windowHeight = 1200, windowWidth = (int) (windowHeight / aspectRatio);
 	
+	private static IntObj playerMoney = new IntObj(100), playerHealth = new IntObj(3);
 	private static ArrayList<GameObject> renderList = new ArrayList<GameObject>();
 	
 	private static final int TARGET_FPS = 60;
@@ -30,8 +31,15 @@ public class RunGame {
 	
 	public static void main(String[] args) {
 		
-		window = new GameWindow(windowHeight, windowWidth, new GameMap("maptest.txt"), renderList);
+		window = new GameWindow(windowHeight, windowWidth, new GameMap("maptest.txt"), playerMoney, playerHealth, renderList);
 		display = window.getDisplayPanel();
+		menu = window.getMenuPanel();
+		
+		menu.setMoneyLabel(playerMoney.value);
+		menu.setHealthLabel(playerHealth.value);
+		
+		new OrangeEnemy(0, 0, 40, 40).setRotation(0);;
+		
 		
 		gameLoop();
 	}
@@ -43,6 +51,8 @@ public class RunGame {
 			float[] velocity = obj.getVelocity();
 			obj.move(velocity[0], velocity[1], w);
 		}
+		
+		menu.setMoneyLabel(playerMoney.value);
 	}
 	
 	private static void gameLoop() {
