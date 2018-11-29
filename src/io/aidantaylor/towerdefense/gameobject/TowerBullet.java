@@ -2,8 +2,11 @@ package io.aidantaylor.towerdefense.gameobject;
 
 public class TowerBullet extends GameObject {
 	
-	public TowerBullet(float x, float y, int w, int h) {
-		super(x, y, w, h);
+	public static final int DIAMETER = 10;
+	public static final int DAMAGE = 1;
+	
+	public TowerBullet(float x, float y) {
+		super(x, y, DIAMETER, DIAMETER);
 	}
 
 }

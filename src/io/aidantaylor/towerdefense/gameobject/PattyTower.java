@@ -15,8 +15,4 @@ public class PattyTower extends Tower {
 		super(x, y, DEFAULT_WIDTH, DEFAULT_HEIGHT, a);
 	}
 	
-	public void Fire() {
-		
-	}
-	
 }

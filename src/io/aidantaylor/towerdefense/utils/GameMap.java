@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
+import io.aidantaylor.towerdefense.gameobject.GameObject;
+import io.aidantaylor.towerdefense.gameobject.GameObject.Anchor;
+
 public class GameMap {
 
 	private int width, height;
@@ -65,7 +68,21 @@ public class GameMap {
 		return endPos;
 	}
 	
-	public static int[] MapToGamePos(int x, int y, int tileSize) {
-		return new int[] {x*tileSize+tileSize/2, y*tileSize+tileSize/2};
+	public static float[] MapToGamePos(int x, int y, int tileSize, Anchor a) {
+		switch (a) {
+		case TOP_LEFT:
+			return new float[] {x*tileSize, y*tileSize};
+		default:
+			return new float[] {x*tileSize+tileSize/2, y*tileSize+tileSize/2};
+		}
+	}
+	
+	public static boolean PointInTile(float pos, float pos2, int tileX, int tileY, int tileSize) {
+		float[] gamePos = MapToGamePos(tileX, tileY, tileSize, GameObject.Anchor.TOP_LEFT);
+		return gamePos[0] <= pos && pos <= gamePos[0]+tileSize;
+	}
+	
+	public static float distanceBetweenPoints(float[] p1, float[] p2) {
+		return (float) Math.sqrt(Math.pow((p1[0]-p2[0]), 2) + Math.pow((p1[1]-p2[1]), 2));
 	}
 }

@@ -153,5 +153,9 @@ public abstract class GameObject {
 		this.width = dims[0];
 		this.height = dims[1];
 	}
+	
+	public static ArrayList<GameObject> getRenderList() {
+		return renderList;
+	}
 
 }

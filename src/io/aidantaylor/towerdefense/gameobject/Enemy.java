@@ -11,12 +11,26 @@ public abstract class Enemy extends GameObject {
 		dimsDict.put(OrangeEnemy.class, new int[]{OrangeEnemy.DEFAULT_WIDTH, OrangeEnemy.DEFAULT_HEIGHT});
 	}
 	
+	protected int health = 5;
+	
 	public Enemy(float x, float y, int w, int h) {
 		super(x, y, w, h);
 	}
 	
 	public Enemy(float x, float y, int w, int h, Anchor a) {
 		super(x, y, w, h, a);
+	}
+	
+	public int getHealth() {
+		return health;
+	}
+	
+	public void takeDamage(int d) {
+		health -= d;
+	}
+	
+	public static Map<Class<? extends Enemy>, int[]> getDimsDict() {
+		return dimsDict;
 	}
 	
 }

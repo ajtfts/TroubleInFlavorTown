@@ -62,9 +62,8 @@ public class GameDisplayPanel extends JPanel {
 			public void mouseClicked(MouseEvent e) {
 				if (towerPreview != null) {
 					if (towerPreview == TomTower.class) {
-						TomTower t = new TomTower(e.getX()-xOffset, e.getY()-yOffset);
+						new TomTower(e.getX()-xOffset, e.getY()-yOffset);
 						playerMoney.value -= Tower.getPriceMap().get(TomTower.class);
-						t.Fire();
 					} else if (towerPreview == PattyTower.class) {
 						new PattyTower(e.getX()-xOffset, e.getY()-yOffset);
 						playerMoney.value -= Tower.getPriceMap().get(PattyTower.class);

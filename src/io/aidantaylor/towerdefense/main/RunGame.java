@@ -6,9 +6,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
+import io.aidantaylor.towerdefense.gameobject.Enemy;
 import io.aidantaylor.towerdefense.gameobject.GameObject;
 import io.aidantaylor.towerdefense.gameobject.OrangeEnemy;
 import io.aidantaylor.towerdefense.gameobject.Tower;
+import io.aidantaylor.towerdefense.gameobject.TowerBullet;
 import io.aidantaylor.towerdefense.utils.GameMap;
 import io.aidantaylor.towerdefense.utils.IntObj;
 import io.aidantaylor.towerdefense.window.GameDisplayPanel;
@@ -26,10 +28,13 @@ public class RunGame {
 	private static int windowHeight = 1200, windowWidth = (int) (windowHeight / aspectRatio);
 	
 	private static GameMap map;
+	private static int[] mapStartPos, mapEndPos;
+	
 	private static IntObj playerMoney = new IntObj(100), playerHealth = new IntObj(3);
 	private static ArrayList<GameObject> renderList = new ArrayList<GameObject>();
+	private static ArrayList<Enemy> enemyList = new ArrayList<Enemy>();
 	
-	private static ArrayList<CallbackObject> queue = new ArrayList<CallbackObject>();
+	private static ArrayList<CallbackObject> queue = new ArrayList<CallbackObject>(); // queue is ArrayList of CallbackObjects, each containing a callback and a waitTime.
 	
 	private static final int TARGET_FPS = 60;
 	private static final long OPTIMAL_TIME = 1000000000 / TARGET_FPS; // convert target frames-per-second to target time between frames in nanoseconds
@@ -38,6 +43,9 @@ public class RunGame {
 	public static void main(String[] args) {
 		
 		map = new GameMap("maptest.txt");
+		mapStartPos = map.getStartPos();
+		mapEndPos = map.getEndPos();
+		
 		window = new GameWindow(windowHeight, windowWidth, map, playerMoney, playerHealth, renderList);
 		display = window.getDisplayPanel();
 		menu = window.getMenuPanel();
@@ -50,16 +58,14 @@ public class RunGame {
 		menu.startRoundButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Callback createEnemy = () -> {
-					int[] mapStartPos = map.getStartPos();
-					int[] startPos = GameMap.MapToGamePos(mapStartPos[0], mapStartPos[1], GameDisplayPanel.TILE_SIZE);
-					OrangeEnemy enemy = new OrangeEnemy(startPos[0], startPos[1]);
+					float[] gameStartPos = GameMap.MapToGamePos(mapStartPos[0], mapStartPos[1], GameDisplayPanel.TILE_SIZE, GameObject.Anchor.CENTER);
+					OrangeEnemy enemy = new OrangeEnemy(gameStartPos[0], gameStartPos[1]);
+					enemyList.add(enemy);
 					enemy.setVelocity(1, 0);
 				};
-				RunGame.queueCallback(createEnemy, 0);
-				RunGame.queueCallback(createEnemy, 1000);
-				RunGame.queueCallback(createEnemy, 2000);
-				RunGame.queueCallback(createEnemy, 3000);
-				RunGame.queueCallback(createEnemy, 4000);
+				
+				for (int i = 0; i < 5; i++)
+					queueCallback(createEnemy, 1000*i); // create 5 enemies, each 1 second apart from each other
 			}
 		});
 		
@@ -72,21 +78,77 @@ public class RunGame {
 		for (GameObject obj : renderList) {
 			float[] velocity = obj.getVelocity();
 			obj.move(velocity[0], velocity[1], w);
-			if (obj instanceof Tower) {
-				((Tower) obj).Fire();
+			
+			if (obj instanceof Enemy) {
+				float[] pos = obj.getPos();
+				if (GameMap.PointInTile(pos[0], pos[1], mapEndPos[0], mapEndPos[1], GameDisplayPanel.TILE_SIZE)) {
+					queueCallback(() -> {
+						renderList.remove(obj);
+						enemyList.remove(obj);
+						playerHealth.value--; // would put some "game over" code after this if playerHealth is reduced to zero, but the grading criteria doesn't explicitly state it's necessary
+						menu.setHealthLabel(playerHealth.value);
+					});
+				}
 			}
+			
+			if (obj instanceof TowerBullet) {
+				float[] bulletPos;
+				float[] enemyPos;
+				for (Enemy enemy : enemyList) {
+					bulletPos = obj.getPos();
+					enemyPos = enemy.getPos();
+					// next line is collision detection between enemies and bullets. since both are circles, you can just test whether the distance between them is greater than the sum of their radiuses.
+					// please don't make me clean this up.
+					if (GameMap.distanceBetweenPoints(bulletPos, enemyPos) < TowerBullet.DIAMETER/2+Enemy.getDimsDict().get(enemy.getClass())[0]/2) {
+						queueCallback(() -> {
+							enemy.takeDamage(TowerBullet.DAMAGE);
+							if (enemy.getHealth() <= 0) {
+								renderList.remove(enemy);
+								enemyList.remove(enemy);
+							}
+							renderList.remove(obj);
+						});
+					}
+					
+				}
+			}
+			
+			if (obj instanceof Tower) { 
+				Enemy closestToEndInRange = null;
+				float[] gameEndPos = GameMap.MapToGamePos(mapEndPos[0], mapEndPos[1], GameDisplayPanel.TILE_SIZE, GameObject.Anchor.CENTER);
+
+				for (Enemy enemy : enemyList) { // find the enemy within the range of the tower that is closest to the end. worth noting that I haven't implemented tower range
+					if (closestToEndInRange == null)
+						closestToEndInRange = enemy;
+					else {
+						if (GameMap.distanceBetweenPoints(closestToEndInRange.getPos(), gameEndPos) > GameMap.distanceBetweenPoints(enemy.getPos(), gameEndPos))
+							closestToEndInRange = enemy;
+					}
+				}
+			
+				if (closestToEndInRange != null) {
+					float[] enemyPos = closestToEndInRange.getPos();
+					obj.lookAt(enemyPos[0], enemyPos[1]);
+					if (((Tower) obj).isFiring() == false)
+						((Tower) obj).beginFiring();
+				} else {
+					((Tower) obj).stopFiring();
+				}
+			}
+			
 		}
 		
+		// following code will handle the callback queue.
 		for (int i = 0; i < queue.size(); i++) {
 			CallbackObject cur = queue.get(i);
 			long waitTime = cur.getWaitTime();
-			if (waitTime == 0) {
+			if (waitTime == 0) { // if there isn't a waitTime on the callback object just execute it immediately
 				cur.getCallback().execute();
-				queue.remove(i);
+				queue.remove(i); // make sure to pop the callback object from the queue after its been executed
 			}
 			else if (waitTime > 0) {
 				long creationTime = cur.getCreationTime();
-				if (creationTime + waitTime <= System.nanoTime()) {
+				if (creationTime + waitTime <= System.nanoTime()) { // tests if the callback is ready to be executed
 					cur.getCallback().execute();
 					queue.remove(i);
 				}
@@ -151,12 +213,12 @@ public class RunGame {
 		}
 	}
 	
-	public static void queueCallback(Callback callback) { // did this to reconcile my game loop and swings. there's almost certainly a better solution but hey
+	public static void queueCallback(Callback callback) {
 		queue.add(new CallbackObject(callback, 0));
 	}
 	
-	public static void queueCallback(Callback callback, long ms) {
-		queue.add(new CallbackObject(callback, ms));
+	public static void queueCallback(Callback callback, long ms) { // this method is the functional equivalent of javascript's setTimeout.
+		queue.add(new CallbackObject(callback, ms));               // takes a callback and a time representing how long to wait to execute the callback.
 	}
 }
 
