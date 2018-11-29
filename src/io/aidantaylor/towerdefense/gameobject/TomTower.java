@@ -1,5 +1,7 @@
 package io.aidantaylor.towerdefense.gameobject;
 
+import io.aidantaylor.towerdefense.main.RunGame;
+
 public class TomTower extends Tower {
 	
 	public static final int DEFAULT_WIDTH = 40;
@@ -16,10 +18,11 @@ public class TomTower extends Tower {
 	}
 
 	public void Fire() {
-		System.out.printf("Fire TomTower at %f degrees\n", this.rotation);
 		float xVelocity = (float) Math.cos(Math.toRadians(this.rotation-90));
 		float yVelocity = (float) Math.sin(Math.toRadians(this.rotation-90));
-		new TowerBullet(this.getX(), this.getY(), 10, 10).setVelocity(xVelocity, yVelocity);;
+		RunGame.queueCallback(() -> {
+			new TowerBullet(this.getX(), this.getY(), 10, 10).setVelocity(xVelocity, yVelocity);
+		});
 		
 	}
 	

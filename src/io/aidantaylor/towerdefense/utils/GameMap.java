@@ -8,7 +8,7 @@ public class GameMap {
 
 	private int width, height;
 	private String data = "";
-	private char[][] dataArray;
+	private int[] startPos, endPos;
 	
 	public GameMap(String fname) {
 		
@@ -16,18 +16,25 @@ public class GameMap {
 		try {
 			Scanner sc = new Scanner(f);
 			
-			int num = 1;
+			int lineNum = 1;
 			while (sc.hasNextLine()) {
 				String line = sc.nextLine();
-				if (num == 1) {
+				if (lineNum == 1) {
 					String[] dims = line.split("x");
 					width = Integer.parseInt(dims[0]);
 					height = Integer.parseInt(dims[1]);
-					dataArray = new char[width][height];
 				} else {
-					data += line;
+					for (int i = 0; i < line.length(); i++) {
+						data += line.charAt(i);
+						if (line.charAt(i) == 's') {
+							startPos = new int[] {i, lineNum-2};
+						}
+						if (line.charAt(i) == 'e') {
+							endPos = new int[] {i, lineNum-2};
+						}
+					}
 				}
-				num++;
+				lineNum++;
 			}
 			sc.close();
 			
@@ -48,5 +55,17 @@ public class GameMap {
 	
 	public String getData() {
 		return data;
+	}
+	
+	public int[] getStartPos() {
+		return startPos;
+	}
+	
+	public int[] getEndPos() {
+		return endPos;
+	}
+	
+	public static int[] MapToGamePos(int x, int y, int tileSize) {
+		return new int[] {x*tileSize+tileSize/2, y*tileSize+tileSize/2};
 	}
 }

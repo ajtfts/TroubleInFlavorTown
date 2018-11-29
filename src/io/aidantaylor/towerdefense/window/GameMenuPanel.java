@@ -25,8 +25,8 @@ public class GameMenuPanel extends JPanel {
 	private GameDisplayPanel display;
 	
 	private JLabel healthLabel, moneyLabel;
-	private JButton addTomTower, addPattyTower;
-	private JButton startRound;
+	private JButton addTomTowerButton, addPattyTowerButton;
+	public JButton startRoundButton;
 	
 	private IntObj playerMoney;
 	
@@ -47,8 +47,8 @@ public class GameMenuPanel extends JPanel {
 		moneyLabel = new JLabel();
 		
 		// button to add TomTower to map
-		addTomTower = new JButton("Tom Tosser");
-		addTomTower.addActionListener(new ActionListener() {
+		addTomTowerButton = new JButton("Tom Tosser");
+		addTomTowerButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (playerMoney.value >= Tower.getPriceMap().get(TomTower.class)) 
 					display.setTowerPreview(TomTower.class);
@@ -56,8 +56,8 @@ public class GameMenuPanel extends JPanel {
 		});
 		
 		// button to add PattyTower to map
-		addPattyTower = new JButton("Patty Tosser");
-		addPattyTower.addActionListener(new ActionListener() {
+		addPattyTowerButton = new JButton("Patty Tosser");
+		addPattyTowerButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (playerMoney.value >= Tower.getPriceMap().get(PattyTower.class))
 					display.setTowerPreview(PattyTower.class);
@@ -65,7 +65,7 @@ public class GameMenuPanel extends JPanel {
 		});
 		
 		//button to start the round
-		startRound = new JButton("Start");
+		startRoundButton = new JButton("Start");
 	
 		// setup GridBag Constraints for panel
 				GridBagConstraints c = new GridBagConstraints();
@@ -86,16 +86,16 @@ public class GameMenuPanel extends JPanel {
 				c.gridx = 0;
 				c.gridy = 2;
 				c.gridwidth = 1;
-				add(addTomTower, c);
+				add(addTomTowerButton, c);
 				
 				c.gridx = 1;
 				c.gridy = 2;
-				add(addPattyTower, c);
+				add(addPattyTowerButton, c);
 				
 				c.gridx = 0;
 				c.gridy = 3;
 				c.gridwidth = 2;
-				add(startRound, c);
+				add(startRoundButton, c);
 	}
 	
 	public void setHealthLabel(int h) {

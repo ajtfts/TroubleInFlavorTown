@@ -2,10 +2,13 @@ package io.aidantaylor.towerdefense.main;
 
 import java.awt.MouseInfo;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 import io.aidantaylor.towerdefense.gameobject.GameObject;
 import io.aidantaylor.towerdefense.gameobject.OrangeEnemy;
+import io.aidantaylor.towerdefense.gameobject.Tower;
 import io.aidantaylor.towerdefense.utils.GameMap;
 import io.aidantaylor.towerdefense.utils.IntObj;
 import io.aidantaylor.towerdefense.window.GameDisplayPanel;
@@ -22,8 +25,11 @@ public class RunGame {
 	private static float aspectRatio = 16.0f/9.0f;
 	private static int windowHeight = 1200, windowWidth = (int) (windowHeight / aspectRatio);
 	
+	private static GameMap map;
 	private static IntObj playerMoney = new IntObj(100), playerHealth = new IntObj(3);
 	private static ArrayList<GameObject> renderList = new ArrayList<GameObject>();
+	
+	private static ArrayList<CallbackObject> queue = new ArrayList<CallbackObject>();
 	
 	private static final int TARGET_FPS = 60;
 	private static final long OPTIMAL_TIME = 1000000000 / TARGET_FPS; // convert target frames-per-second to target time between frames in nanoseconds
@@ -31,15 +37,31 @@ public class RunGame {
 	
 	public static void main(String[] args) {
 		
-		window = new GameWindow(windowHeight, windowWidth, new GameMap("maptest.txt"), playerMoney, playerHealth, renderList);
+		map = new GameMap("maptest.txt");
+		window = new GameWindow(windowHeight, windowWidth, map, playerMoney, playerHealth, renderList);
 		display = window.getDisplayPanel();
 		menu = window.getMenuPanel();
 		
 		menu.setMoneyLabel(playerMoney.value);
 		menu.setHealthLabel(playerHealth.value);
 		
-		new OrangeEnemy(0, 0, 40, 40).setRotation(0);;
 		
+		// what code to execute when the start button is pressed
+		menu.startRoundButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Callback createEnemy = () -> {
+					int[] mapStartPos = map.getStartPos();
+					int[] startPos = GameMap.MapToGamePos(mapStartPos[0], mapStartPos[1], GameDisplayPanel.TILE_SIZE);
+					OrangeEnemy enemy = new OrangeEnemy(startPos[0], startPos[1]);
+					enemy.setVelocity(1, 0);
+				};
+				RunGame.queueCallback(createEnemy, 0);
+				RunGame.queueCallback(createEnemy, 1000);
+				RunGame.queueCallback(createEnemy, 2000);
+				RunGame.queueCallback(createEnemy, 3000);
+				RunGame.queueCallback(createEnemy, 4000);
+			}
+		});
 		
 		gameLoop();
 	}
@@ -50,6 +72,25 @@ public class RunGame {
 		for (GameObject obj : renderList) {
 			float[] velocity = obj.getVelocity();
 			obj.move(velocity[0], velocity[1], w);
+			if (obj instanceof Tower) {
+				((Tower) obj).Fire();
+			}
+		}
+		
+		for (int i = 0; i < queue.size(); i++) {
+			CallbackObject cur = queue.get(i);
+			long waitTime = cur.getWaitTime();
+			if (waitTime == 0) {
+				cur.getCallback().execute();
+				queue.remove(i);
+			}
+			else if (waitTime > 0) {
+				long creationTime = cur.getCreationTime();
+				if (creationTime + waitTime <= System.nanoTime()) {
+					cur.getCallback().execute();
+					queue.remove(i);
+				}
+			}
 		}
 		
 		menu.setMoneyLabel(playerMoney.value);
@@ -108,6 +149,14 @@ public class RunGame {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	public static void queueCallback(Callback callback) { // did this to reconcile my game loop and swings. there's almost certainly a better solution but hey
+		queue.add(new CallbackObject(callback, 0));
+	}
+	
+	public static void queueCallback(Callback callback, long ms) {
+		queue.add(new CallbackObject(callback, ms));
 	}
 }
 
