@@ -3,6 +3,13 @@ package io.aidantaylor.towerdefense.gameobject;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * 
+ * @author Aidan Taylor
+ * @date 11/29/2018
+ * @description Abstract Enemy Object. Extends GameObject. 
+ */
+
 public abstract class Enemy extends GameObject {
 
 	private static Map<Class<? extends Enemy>, int[]> dimsDict;

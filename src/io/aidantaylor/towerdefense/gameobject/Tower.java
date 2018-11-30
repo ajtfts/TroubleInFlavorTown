@@ -7,6 +7,13 @@ import io.aidantaylor.towerdefense.main.Callback;
 import io.aidantaylor.towerdefense.main.RecursiveCallback;
 import io.aidantaylor.towerdefense.main.RunGame;
 
+/**
+ * 
+ * @author Aidan Taylor
+ * @date 11/29/2018
+ * @description Abstract tower object. Extends GameObject
+ */
+
 public abstract class Tower extends GameObject {
 	
 	private static Map<Class<? extends Tower>, int[]> dimsDict;
@@ -40,9 +47,9 @@ public abstract class Tower extends GameObject {
 			TowerBullet bullet = new TowerBullet(this.getX(), this.getY());
 			bullet.setVelocity(xVelocity*20, yVelocity*20);
 			RunGame.queueCallback(() -> {
-				// after the bullet has been alive for 6 seconds, remove it from renderList
+				// after the bullet has been alive for 3 seconds, remove it from renderList
 				GameObject.getRenderList().remove(bullet);
-			}, 6000);
+			}, 3000);
 		});
 	}
 	

@@ -1,5 +1,12 @@
 package io.aidantaylor.towerdefense.gameobject;
 
+/**
+ * 
+ * @author Aidan Taylor
+ * @date 11/29/2018
+ * @description Specific type of enemy.
+ */
+
 public class OrangeEnemy extends Enemy {
 
 	public static final int DEFAULT_WIDTH = 40;

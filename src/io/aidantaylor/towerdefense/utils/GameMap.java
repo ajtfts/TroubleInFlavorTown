@@ -7,6 +7,13 @@ import java.util.Scanner;
 import io.aidantaylor.towerdefense.gameobject.GameObject;
 import io.aidantaylor.towerdefense.gameobject.GameObject.Anchor;
 
+/**
+ * 
+ * @author Aidan Taylor
+ * @date 11/29/2018
+ * @description Contains the GameMap class. GameMap takes a filename representing a text file containing map information and parses it.
+ */
+
 public class GameMap {
 
 	private int width, height;
@@ -80,9 +87,5 @@ public class GameMap {
 	public static boolean PointInTile(float pos, float pos2, int tileX, int tileY, int tileSize) {
 		float[] gamePos = MapToGamePos(tileX, tileY, tileSize, GameObject.Anchor.TOP_LEFT);
 		return gamePos[0] <= pos && pos <= gamePos[0]+tileSize;
-	}
-	
-	public static float distanceBetweenPoints(float[] p1, float[] p2) {
-		return (float) Math.sqrt(Math.pow((p1[0]-p2[0]), 2) + Math.pow((p1[1]-p2[1]), 2));
 	}
 }

@@ -10,6 +10,13 @@ import javax.imageio.ImageIO;
 
 import io.aidantaylor.towerdefense.gameobject.*;
 
+/**
+ * 
+ * @author Aidan Taylor
+ * @date 11/29/2018
+ * @description Loads all the images required for the game and stores them in dictionaries.
+ */
+
 public class ResourceLoader {
 	
 	public static Map<Class<? extends GameObject>, BufferedImage> loadObjectImages() {

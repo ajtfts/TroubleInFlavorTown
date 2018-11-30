@@ -2,6 +2,13 @@ package io.aidantaylor.towerdefense.gameobject;
 
 import java.util.ArrayList;
 
+/**
+ * 
+ * @author Aidan Taylor
+ * @date 11/29/2018
+ * @description GameObject class. Base class for all "objects" in the game
+ */
+
 public abstract class GameObject {
 	
 	public enum Anchor {

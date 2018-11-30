@@ -17,7 +17,12 @@ import io.aidantaylor.towerdefense.window.GameDisplayPanel;
 import io.aidantaylor.towerdefense.window.GameMenuPanel;
 import io.aidantaylor.towerdefense.window.GameWindow;
 
-
+/**
+ * 
+ * @author Aidan Taylor
+ * @date 11/29/2018
+ * @description Driver file. Contains the main loop and everything required to construct it.
+ */
 
 public class RunGame {
 
@@ -98,8 +103,7 @@ public class RunGame {
 					bulletPos = obj.getPos();
 					enemyPos = enemy.getPos();
 					// next line is collision detection between enemies and bullets. since both are circles, you can just test whether the distance between them is greater than the sum of their radiuses.
-					// please don't make me clean this up.
-					if (GameMap.distanceBetweenPoints(bulletPos, enemyPos) < TowerBullet.DIAMETER/2+Enemy.getDimsDict().get(enemy.getClass())[0]/2) {
+					if (distanceBetweenPoints(bulletPos, enemyPos) < TowerBullet.DIAMETER/2+Enemy.getDimsDict().get(enemy.getClass())[0]/2) {
 						queueCallback(() -> {
 							enemy.takeDamage(TowerBullet.DAMAGE);
 							if (enemy.getHealth() <= 0) {
@@ -121,7 +125,7 @@ public class RunGame {
 					if (closestToEndInRange == null)
 						closestToEndInRange = enemy;
 					else {
-						if (GameMap.distanceBetweenPoints(closestToEndInRange.getPos(), gameEndPos) > GameMap.distanceBetweenPoints(enemy.getPos(), gameEndPos))
+						if (distanceBetweenPoints(closestToEndInRange.getPos(), gameEndPos) > distanceBetweenPoints(enemy.getPos(), gameEndPos))
 							closestToEndInRange = enemy;
 					}
 				}
@@ -211,6 +215,10 @@ public class RunGame {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	public static float distanceBetweenPoints(float[] p1, float[] p2) {
+		return (float) Math.sqrt(Math.pow((p1[0]-p2[0]), 2) + Math.pow((p1[1]-p2[1]), 2));
 	}
 	
 	public static void queueCallback(Callback callback) {
